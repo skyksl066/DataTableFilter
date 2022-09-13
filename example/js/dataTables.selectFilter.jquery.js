@@ -13,7 +13,6 @@ class SelectFilter {
     init($this, colArray) {
         let that = this;
         let columns = $this.api().settings().init().columns ?? $this.api().settings().init().aoColumns;
-		console.log(columns)
         that.tableName = $this[0].id;
         // 處理進來的col設定
         if (typeof colArray != 'object' || colArray == null) {
@@ -94,7 +93,7 @@ class SelectFilter {
                             <input type="search" class="form-control" autocomplete="off" />
                         </div>
                         <div class="filter-body pt-1 pb-0">{0}</div>
-                        <div class="filter-footer text-right pr-0">
+                        <div class="filter-footer text-right pr-2">
                             <button type="button" class="btn btn-light Clear">Clear</button>
                             <button type="button" class="btn btn-primary Ok">Ok</button>
                         </div>
@@ -144,7 +143,7 @@ class SelectFilter {
                         });
                         // live search
                         $(newTemplate).on('keyup', 'input[type="search"]', function (e) {
-                            let searchString = $(this).val().toUpperCase().trim();
+                            let searchString = $(this).val().trim();
                             let rootNode = $(this).parent().parent().children(".filter-body");
                             if (searchString == '') {
                                 rootNode.find('div').show();
@@ -159,7 +158,11 @@ class SelectFilter {
                                     rootNode.find(`div input[value="${value}"]`).prop("checked", true);
                                 });
                                 $.each(searchString.split(' '), function (index, value) {
-                                    rootNode.find(`div:contains('${value}')`).show();
+									$.each(rootNode.children(), function(i, v) {
+										if ($(v).text().toUpperCase().indexOf(value.toUpperCase()) != -1)
+											$(v).show();
+									});
+                                    //rootNode.find(`div:contains('${value}')`).show();
                                 });
                             }
                         });
@@ -229,6 +232,7 @@ class SelectFilter {
                             $.each(colArray, function (index, value) {
                                 $(that.modalFilterArray[`${that.tableName}_${value}`]).remove();
                             });
+							if (searchString != '')
                             $(`#${that.tableName} th:eq(${item}) .filterIcon`).addClass('active');
                         });
                         that.modalFilterArray[`${that.tableName}_${item}`] = newTemplate;
